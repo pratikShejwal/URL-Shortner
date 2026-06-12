@@ -3,10 +3,15 @@ const router = express.Router()
 import {db} from '../db/index.js'
 import {usersTable} from '../models/index.js'
 import {randomBytes,createHmac} from 'node:crypto'
+import {signupPostReqBodySchema} from '../validations/request.validations.js'
 
 router.post('/signup',async(req,res)=>{
-    const {firstname, lastname, email,password } = req.body
+    const validationResult = await signupPostReqBodySchema.safeParseAsync(req.body)
 
+    if(validationResult.error){
+        return res.status(400).json({error: validationResult.error.message})
+    }
+    const {firstname,lastname,email,password} = validationResult.data
    // if(!firstname) return res.status(400).json({error:"firstname is required"})
    const [existingUser] = await db
    .select({
@@ -27,3 +32,5 @@ router.post('/signup',async(req,res)=>{
 
     return res.status(201).json({data:{userId : user.id} })
 })
+
+export default router;
