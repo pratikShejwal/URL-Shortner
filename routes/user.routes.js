@@ -12,7 +12,7 @@ router.post('/signup',async(req,res)=>{
         return res.status(400).json({error: validationResult.error.message})
     }
     const {firstname,lastname,email,password} = validationResult.data
-   // if(!firstname) return res.status(400).json({error:"firstname is required"})
+   
    const [existingUser] = await db
    .select({
     id: usersTable.id,
